@@ -5,7 +5,6 @@ import (
 	"net"
 	"net/http"
 	"testing"
-	"time"
 )
 
 type contextKey struct{}
@@ -18,8 +17,9 @@ func GetValue(ctx context.Context) map[string]string {
 }
 
 func handler(rw http.ResponseWriter, req *http.Request) {
-	ctx, cancel := context.WithTimeout(req.Context(), 5*time.Second)
-	defer cancel()
+	ctx := req.Context()
+	// ctx, cancel := context.WithTimeout(ctx, 5*time.Second)
+	// defer cancel()
 
 	ctx = context.WithValue(ctx, contextKey{}, value)
 
@@ -56,6 +56,7 @@ func BenchmarkHttpServer(b *testing.B) {
 	b.ResetTimer()
 
 	b.ReportAllocs()
+	b.SetParallelism(16)
 	b.RunParallel(func(pb *testing.PB) {
 		c := &http.Client{
 			Transport: &http.Transport{},
