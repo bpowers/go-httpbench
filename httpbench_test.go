@@ -5,6 +5,7 @@ import (
 	"net"
 	"net/http"
 	"testing"
+	"time"
 )
 
 type contextKey struct{}
@@ -18,8 +19,9 @@ func GetValue(ctx context.Context) map[string]string {
 
 func handler(rw http.ResponseWriter, req *http.Request) {
 	ctx := req.Context()
-	// ctx, cancel := context.WithTimeout(ctx, 5*time.Second)
-	// defer cancel()
+
+	ctx, cancel := context.WithTimeout(ctx, 5*time.Second)
+	defer cancel()
 
 	ctx = context.WithValue(ctx, contextKey{}, value)
 
